@@ -12,14 +12,15 @@ struct CostWeight{
     bool operator <= (CostWeight right);
     bool operator >= (CostWeight right);
     CostWeight operator += (CostWeight right);
-    CostWeight(Direction dir);
+    CostWeight(Direction dir); // методы сравнения докинуться, вообще эта структура пока самое 
+                               //непонятное, возможно она переделается
     
 };
 
 class RoutFinderInerface{
   public:
     RoutFinderInerface(std::shared_ptr<Graph> graph, std::string mode): graph(graph){}
-    virtual std::vector<Station> GetPath(Station start, Station finish);
+    virtual std::vector<Station> GetPath(Station start, Station finish); // Station - пока затычка
     virtual ~RoutFinderInerface();
   private:
     std::unique_ptr<RoutFinder> finder;
