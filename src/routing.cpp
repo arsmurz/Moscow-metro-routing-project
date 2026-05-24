@@ -1,28 +1,87 @@
-#pragma once
-#include "../include/routing.h"
+#include <algorithm>
+#include <iostream>
+#include <memory>
 #include <queue>
 #include <vector>
 
-template<typename Weight>
-class RoutFinder{
-  std::priority_queue<std::pair<int, Weight>, std::vector<std::pair<int, Weight>,
-                        [](const P& left, const P& right) {
-                            return left > right;
-                        }
-  std::shared_ptr<Graph> graph;
-  std::vecotr<double> distance;
-  int from;
+struct Edge {
   int to;
-  void relaxation(int id) {
-    std::vector<Direction> neighbours = graph->getAdj(id); // здесь должно быть получение вектора из соседей, todo
-    for (auto edge : neighbours) {
-        
+  int time;
+  int cost;
+  bool isTransfer;
+};
+
+class IGraph {
+public:
+  virtual ~IGraph() = default;
+  virtual const std::vector<Edge> &getEdges(int vertexId) const = 0;
+  virtual size_t vertexCount() const = 0;
+};
+
+struct PathResult {
+  int totalWeight = 0;
+  std::vector<int> path;
+  bool found = false;
+};
+
+//Самый быстрый путь
+struct FastestStrategy {
+  static int edgeWeight(const Edge &edge) { return edge.time; }
+};
+
+//Самый дешевый путь
+struct CheapestStrategy {
+  static int edgeWeight(const Edge &edge) { return edge.cost; }
+};
+
+//Минимум пересадок
+struct MinTransfersStrategy {
+  static int edgeWeight(const Edge &edge) { return edge.isTransfer ? 1 : 0; }
+};
+
+template <typename Strategy> class PathFinder {
+public:
+  explicit PathFinder(std::shared_ptr<IGraph> graph)
+      : graph_(std::move(graph)) {}
+
+  PathResult findShortestPath(int start, int finish) const {
+    const int INF = 1e9;
+
+    std::vector<int> dist(graph_->vertexCount(), INF);
+    std::vector<int> parent(graph_->vertexCount(), -1);
+
+    using QueueItem = std::pair<int, int>;
+
+    std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<>> pq;
+    dist[start] = 0;
+    pq.emplace(0, start);
+    while (!pq.empty()) {
+      auto [currentDist, vertex] = pq.top();
+      pq.pop();
+
+      if (currentDist > dist[vertex]) { continue; }
+      if (vertex == finish) { break; }
+      for (const auto &edge : graph_->getEdges(vertex)) {
+        const int weight = Strategy::edgeWeight(edge);
+        if (dist[vertex] + weight < dist[edge.to]) {
+          dist[edge.to] = dist[vertex] + weight;
+          parent[edge.to] = vertex;
+          pq.emplace(dist[edge.to], edge.to);
+        }
+      }
     }
+    PathResult result;
+    if (dist[finish] == INF) {
+      return result;
+    }
+    result.totalWeight = dist[finish];
+    result.found = true;
+    for (int v = finish; v != -1; v = parent[v]) {
+      result.path.push_back(v);
+    }
+    std::reverse(result.path.begin(), result.path.end());
+    return result;
   }
-  public:
-    RouteFinder(std::shared_ptr<Graph> graph, int from, int to): graph(graph), from(from), to(to) {
-        distance.resize(graph->GetStations(), cInf);
-        distance[from] = 0;
-    }
-    std::vector<int> GetPath() {}
+private:
+  std::shared_ptr<IGraph> graph_;
 };
