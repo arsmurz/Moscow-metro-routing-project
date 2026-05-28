@@ -1,5 +1,13 @@
 #include "../include/navigator_facade.h"
 
+NavigatorFacade::NavigatorFacade() {
+  // Создаем объект графа
+  graph = std::make_unique<Graph>();
+
+  // Передаем ссылку на созданный граф в объект поиска
+  solver = std::make_unique<Solver>(*graph);
+}
+
 RouteResult NavigatorFacade::group_by_lines(const std::vector<Station>& raw_path) const {
     RouteResult result;
 
@@ -14,7 +22,7 @@ RouteResult NavigatorFacade::group_by_lines(const std::vector<Station>& raw_path
 
         // вызов функции Андрея
         // если возвращает true то пересадка и начинаем новую линию
-        if (is_transfer(raw_path[i - 1], raw_path[i])) {
+        if (graph->is_transfer(raw_path[i - 1], raw_path[i])) {
             result.lines.push_back(current_line);
             current_line.clear();
         }
@@ -36,21 +44,21 @@ AllRoutesResult NavigatorFacade::find_all_routes(const std::string& start, const
     // 1 поток
     auto future_fast = std::async(std::launch::async, [this, &start, &end]() {
         // быстрый путь
-        std::vector<Station> raw = get_fastest_path(start, end);
+        std::vector<Station> raw = solver->get_fastest_path(start, end);
         return this->group_by_lines(raw);
     });
 
     // 1 поток
     auto future_cheap = std::async(std::launch::async, [this, &start, &end]() {
         // дешевый путь
-        std::vector<Station> raw = get_cheapest_path(start, end);
+        std::vector<Station> raw = solver->get_cheapest_path(start, end);
         return this->group_by_lines(raw);
     });
 
     // 3 поток
     auto future_transfers = std::async(std::launch::async, [this, &start, &end]() {
         // минимальные пересадки
-        std::vector<Station> raw = get_min_transfers_path(start, end);
+        std::vector<Station> raw = solver->get_min_transfers_path(start, end);
         return this->group_by_lines(raw);
     });
 

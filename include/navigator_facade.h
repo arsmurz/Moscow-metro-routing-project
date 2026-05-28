@@ -5,6 +5,8 @@
 #include <future>
 
 // инклуд хэдеров с обещанной функцией и классом Station
+#include "graph.h"
+#include "routing.h"
 
 struct RouteResult {
     // каждый внутренний вектор это станции на одной линии
@@ -20,6 +22,9 @@ struct AllRoutesResult {
 
 class NavigatorFacade {
 private:
+    // граф
+    std::shared_ptr<IGraph> graph;
+
     // метод разделения на линии
     RouteResult group_by_lines(const std::vector<Station>& raw_path) const;
 
