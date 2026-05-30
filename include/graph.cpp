@@ -10,33 +10,27 @@ Station::Station(std::string name, int line_num, size_t id)
     if (id >= id_counter) id_counter = id + 1;
 }
 
-Edge::Edge(int time, int cost, size_t to) 
-    : time(time), cost(cost), to(to) {}
+Edge::Edge(int time, int cost, size_t to, bool is_transfer) 
+    : time(time), cost(cost), to(to), is_transfer(is_transfer) {}
 
-template <template <typename...> typename NeighbourContainer>
-Graph<NeighbourContainer>::Graph(std::istream& in_stream) {
-    // TODO
-}
+/*template <template<typename ...> typename NeighbourContainer> 
+void Graph<NeighbourContainer>::forEachEdge(size_t vertexId, 
+                                       std::function<bool(const Edge&)> visitor) const {
+    auto it = adj_list.find(vertexId);
+    if (it != adj_list.end()) {
+        for (const Edge& edge : it->second) {
+            if (!visitor(edge)) {
+                break;
+            }
+        }
+    }
+}*/
 
-template <template <typename...> typename NeighbourContainer>
-template <typename SourceContainer>
-Graph<NeighbourContainer>::Graph(SourceContainer source_adj) {
-    // TODO
-}
-
-template <template <typename...> typename NeighbourContainer>
-void Graph<NeighbourContainer>::Save() {
-    // TODO
-}
-
-template <template <typename...> typename NeighbourContainer>
-Graph<NeighbourContainer>::~Graph() {
-    // TODO
-}
 
 void FastModificationGraph::AddStation(Station new_station) {
     stations.insert(new_station);
-    Station_by_id[new_station.getId()] = new_station;
+    station_by_id[new_station.getId()] = new_station;
+    name_to_id[new_station.getName()] = new_station.getId();
 }
 
 void FastModificationGraph::AddEdge(size_t from_id, Edge dir) {
@@ -44,11 +38,23 @@ void FastModificationGraph::AddEdge(size_t from_id, Edge dir) {
 }
 
 void FastModificationGraph::DeleteStation(size_t station_id) {
-    for (auto &dir : adj_list[station_id]) {
-        DeleteEdge(station_id, dir);
+    // копируем рёбра
+    auto it = adj_list.find(station_id);
+    if (it != adj_list.end()) {
+        std::vector<Edge> edges_to_delete(it->second.begin(), it->second.end());
+        for (const Edge& dir : edges_to_delete) {
+            DeleteEdge(station_id, dir);
+        }
     }
-    stations.erase(Station_by_id[station_id]);
-    Station_by_id.erase(station_id);
+    
+    // удаляем станцию
+    auto station_it = station_by_id.find(station_id);
+    if (station_it != station_by_id.end()) {
+        const Station& dead_station = station_it->second;
+        name_to_id.erase(dead_station.getName());
+        stations.erase(dead_station);
+        station_by_id.erase(station_id);
+    }
 }
 
 void FastModificationGraph::DeleteEdge(size_t from_id, Edge dir) {
