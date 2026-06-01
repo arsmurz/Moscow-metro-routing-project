@@ -8,9 +8,9 @@ ConsoleUI::ConsoleUI(NavigatorFacade& f) : facade(f) {}
 
 void ConsoleUI::run() {
     int choice = 0;
-    while (true) {
-        std::cout << "1 найти\n2 очистить\n3 выход\nввод: ";
-        if (!(std::cin >> choice)) break;
+    while (choice != 3) {
+        std::cout << "1 найти 2 очистить 3 выход ввод: ";
+        std::cin >> choice;
 
         if (choice == 1) {
             std::string s, e;
@@ -18,12 +18,15 @@ void ConsoleUI::run() {
             std::cin >> s;
             std::cout << "куда: ";
             std::cin >> e;
+
             FindRouteCommand cmd(facade, s, e);
             cmd.execute();
         } else if (choice == 2) {
+#ifdef _WIN32
             std::system("cls");
-        } else if (choice == 3) {
-            break;
+#else
+            std::system("clear");
+#endif
         }
     }
 }

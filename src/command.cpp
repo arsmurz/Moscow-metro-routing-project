@@ -5,29 +5,29 @@ FindRouteCommand::FindRouteCommand(NavigatorFacade& f, std::string s, std::strin
     : facade(f), start(std::move(s)), end(std::move(e)) {}
 
 void FindRouteCommand::print_route(const RouteResult& route, const std::string& title) const {
-    std::cout << title << "\n";
+    std::cout << title;
 
-    if (!route.success or route.lines.empty()) {
-        std::cout << "путь не найден\n\n";
+    if (!route.success || route.lines.empty()) {
+        std::cout << " маршрут не найден";
         return;
     }
 
     for (size_t i = 0; i < route.lines.size(); ++i) {
         if (i > 0) {
-            std::cout << "  пересадка\n";
+            std::cout << " пересадка";
         }
-
         for (const auto& station : route.lines[i]) {
-            std::cout << "  - " << station.name << "\n";
+            std::cout << " " << station.getName();
         }
     }
-    std::cout << "\n";
 }
 
 void FindRouteCommand::execute() {
     AllRoutesResult routes = facade.find_all_routes(start, end);
 
     print_route(routes.fastest, "быстрый:");
+    std::cout << " ";
     print_route(routes.cheapest, "дешевый:");
+    std::cout << " ";
     print_route(routes.min_transfers, "мин пересадок:");
 }

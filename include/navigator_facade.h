@@ -3,13 +3,11 @@
 #include <string>
 #include <vector>
 #include <future>
-
-// инклуд хэдеров с обещанной функцией и классом Station
+#include <memory>
 #include "graph.h"
 #include "routing.h"
 
 struct RouteResult {
-    // каждый внутренний вектор это станции на одной линии
     std::vector<std::vector<Station>> lines;
     bool success = false;
 };
@@ -22,15 +20,10 @@ struct AllRoutesResult {
 
 class NavigatorFacade {
 private:
-    // граф
-    std::shared_ptr<IGraph> graph;
-
-    // метод разделения на линии
+    std::shared_ptr<FastModificationGraph> graph;
     RouteResult group_by_lines(const std::vector<Station>& raw_path) const;
 
 public:
-    NavigatorFacade() = default;
-
-    // главный метод
-    AllRoutesResult find_all_routes(const std::string& start, const std::string& end);
+    NavigatorFacade(const std::string& map_filename);
+    AllRoutesResult find_all_routes(const std::string& start_name, const std::string& end_name);
 };

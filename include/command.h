@@ -13,7 +13,6 @@ class FindRouteCommand final : public ICommand {
     std::string start;
     std::string end;
 
-    // вывод
     void print_route(const RouteResult& route, const std::string& title) const;
 
 public:
