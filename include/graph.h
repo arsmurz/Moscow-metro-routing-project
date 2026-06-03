@@ -71,8 +71,6 @@ namespace std {
     };
 }
 
-// Добавьте после определения классов Station и Edge, но до хеш-функций
-
 inline bool operator==(const Station& lhs, const Station& rhs) {
     return lhs.getId() == rhs.getId() && 
            lhs.getName() == rhs.getName() && 
@@ -99,13 +97,12 @@ public:
 template <template <typename...> typename NeighbourContainer>
 class Graph : public IGraph {
 //protected:
-public:
-    std::unordered_set<Edge> edges;
+protected:
     std::unordered_set<Station> stations;
     std::unordered_map<std::string, size_t> name_to_id;
     std::unordered_map<size_t, NeighbourContainer<Edge>> adj_list;
     std::unordered_map<size_t, Station> station_by_id;
-// public:
+ public:
 
     void forEachEdge(size_t vertexId, 
                     std::function<bool(const Edge&)> visitor) const override {
@@ -123,7 +120,7 @@ public:
         }
     }
 
-
+    const Station& getStationById(size_t station_id) const { return station_by_id.at(station_id); }
     std::string getStationName(size_t station_id) const { return station_by_id.at(station_id).getName(); }
     size_t StationCount() const { return stations.size(); }
     virtual size_t getId(std::string name) const override { return name_to_id.at(name); }

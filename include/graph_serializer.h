@@ -27,7 +27,6 @@ private:
     void writeEdges(std::ofstream& file, const FastModificationGraph& graph);
     void readStations(std::ifstream& file, FastModificationGraph& graph);
     void readEdges(std::ifstream& file, FastModificationGraph& graph);
-    void readEdgesV1(std::ifstream& file, FastModificationGraph& graph);  // ← Добавить
 };
 
 class JSONStrategy : public ISerializationStrategy {

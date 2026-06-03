@@ -13,20 +13,6 @@ Station::Station(std::string name, int line_num, size_t id)
 Edge::Edge(int time, int cost, size_t to, bool is_transfer) 
     : time(time), cost(cost), to(to), is_transfer(is_transfer) {}
 
-/*template <template<typename ...> typename NeighbourContainer> 
-void Graph<NeighbourContainer>::forEachEdge(size_t vertexId, 
-                                       std::function<bool(const Edge&)> visitor) const {
-    auto it = adj_list.find(vertexId);
-    if (it != adj_list.end()) {
-        for (const Edge& edge : it->second) {
-            if (!visitor(edge)) {
-                break;
-            }
-        }
-    }
-}*/
-
-
 void FastModificationGraph::AddStation(Station new_station) {
     stations.insert(new_station);
     station_by_id[new_station.getId()] = new_station;
@@ -38,7 +24,6 @@ void FastModificationGraph::AddEdge(size_t from_id, Edge dir) {
 }
 
 void FastModificationGraph::DeleteStation(size_t station_id) {
-    // копируем рёбра
     auto it = adj_list.find(station_id);
     if (it != adj_list.end()) {
         std::vector<Edge> edges_to_delete(it->second.begin(), it->second.end());
