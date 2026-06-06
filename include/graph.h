@@ -12,6 +12,7 @@
 #include <generator>
 #include <ranges>
 #include <functional>
+#include "exceptions.h"
 
 struct Station {
 private:
@@ -50,12 +51,12 @@ namespace std {
     template<>
     struct hash<Edge> {
         size_t operator()(const Edge& e) const {
-            // Комбинируем все поля, которые делают ребро уникальным
+            // Комбинируем все поля ребра
             size_t h1 = hash<size_t>()(e.to);
             size_t h2 = hash<int>()(e.time);
             size_t h3 = hash<int>()(e.cost);
             size_t h4 = hash<bool>()(e.is_transfer);
-            // XOR комбинация (простой и эффективный способ)
+            // XOR комбинация
             return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
         }
     };
@@ -89,14 +90,14 @@ public:
   virtual void forEachEdge(size_t vertexId, 
                              std::function<bool(const Edge&)> visitor) const = 0;
   virtual void forEachVertex(std::function<bool(const Station&)> visitor) const = 0;
-  virtual size_t StationCount() const = 0;
+  virtual size_t getStationCount() const = 0;
   virtual std::string getName(size_t vertex_id) const = 0;
-  virtual size_t getId(std::string name) const = 0;
+  virtual int32_t getLineNum(size_t Station_id) const = 0;
+  virtual size_t getId(const std::string& name) const = 0;
 };
 
 template <template <typename...> typename NeighbourContainer>
 class Graph : public IGraph {
-//protected:
 protected:
     std::unordered_set<Station> stations;
     std::unordered_map<std::string, size_t> name_to_id;
@@ -122,10 +123,24 @@ protected:
 
     const Station& getStationById(size_t station_id) const { return station_by_id.at(station_id); }
     std::string getStationName(size_t station_id) const { return station_by_id.at(station_id).getName(); }
-    size_t StationCount() const { return stations.size(); }
-    virtual size_t getId(std::string name) const override { return name_to_id.at(name); }
-    int32_t getLineNum(size_t Station_id) const { return station_by_id.at(Station_id).getLineNo(); }
-    std::string getName(size_t Station_id) const { return station_by_id.at(Station_id).getName(); }
+    size_t getStationCount() const { return stations.size(); }
+    //virtual size_t getId(std::string name) const override { return name_to_id.at(name); }
+    virtual size_t getId(const std::string& name) const override { 
+        auto it = name_to_id.find(name);
+        if (it == name_to_id.end()) {
+            throw StationNotFoundException(name);
+        }
+        return it->second;
+    }
+    virtual int32_t getLineNum(size_t Station_id) const override { return station_by_id.at(Station_id).getLineNo(); }
+    // std::string getName(size_t Station_id) const { return station_by_id.at(Station_id).getName(); }
+    virtual std::string getName(size_t station_id) const override { 
+        auto it = station_by_id.find(station_id);
+        if (it == station_by_id.end()) {
+            throw StationNotFoundException(station_id);
+        }
+        return it->second.getName();
+    }
     const NeighbourContainer<Station>& getstations() { return stations; }
     const NeighbourContainer<Edge>& getEdges(size_t station_id) {
         return adj_list[station_id];

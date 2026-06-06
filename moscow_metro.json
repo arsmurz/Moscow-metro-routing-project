@@ -1,0 +1,121 @@
+{
+  "edges": [
+    {
+      "cost": 10,
+      "from": 0,
+      "is_transfer": false,
+      "time": 5,
+      "to": 2
+    },
+    {
+      "cost": 7,
+      "from": 0,
+      "is_transfer": true,
+      "time": 3,
+      "to": 4
+    },
+    {
+      "cost": 8,
+      "from": 0,
+      "is_transfer": false,
+      "time": 4,
+      "to": 6
+    },
+    {
+      "cost": 12,
+      "from": 0,
+      "is_transfer": true,
+      "time": 6,
+      "to": 8
+    },
+    {
+      "cost": 5,
+      "from": 0,
+      "is_transfer": false,
+      "time": 2,
+      "to": 10
+    },
+    {
+      "cost": 5,
+      "from": 2,
+      "is_transfer": false,
+      "time": 4,
+      "to": 4
+    },
+    {
+      "cost": 9,
+      "from": 2,
+      "is_transfer": true,
+      "time": 7,
+      "to": 10
+    },
+    {
+      "cost": 6,
+      "from": 4,
+      "is_transfer": true,
+      "time": 5,
+      "to": 6
+    },
+    {
+      "cost": 4,
+      "from": 6,
+      "is_transfer": false,
+      "time": 3,
+      "to": 8
+    },
+    {
+      "cost": 9,
+      "from": 8,
+      "is_transfer": true,
+      "time": 7,
+      "to": 2
+    },
+    {
+      "cost": 4,
+      "from": 10,
+      "is_transfer": false,
+      "time": 3,
+      "to": 6
+    },
+    {
+      "cost": 6,
+      "from": 10,
+      "is_transfer": true,
+      "time": 4,
+      "to": 8
+    }
+  ],
+  "stations": [
+    {
+      "id": 0,
+      "line": 1,
+      "name": "Central"
+    },
+    {
+      "id": 2,
+      "line": 1,
+      "name": "North_Station"
+    },
+    {
+      "id": 4,
+      "line": 2,
+      "name": "South_Station"
+    },
+    {
+      "id": 6,
+      "line": 2,
+      "name": "East_Station"
+    },
+    {
+      "id": 8,
+      "line": 3,
+      "name": "West_Station"
+    },
+    {
+      "id": 10,
+      "line": 4,
+      "name": "Transfer_Hub"
+    }
+  ],
+  "version": 2
+}

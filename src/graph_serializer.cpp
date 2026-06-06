@@ -8,8 +8,9 @@ using json = nlohmann::json;
 // бинарник - самый экономный, но менее удобный
 bool BinaryStrategy::save(const FastModificationGraph& graph, const std::string& filename) {
     std::ofstream file(filename, std::ios::binary);
-    if (!file) return false;
-    
+    if (!file) {
+        return false;
+    }
     uint32_t magic = 0x47524648;
     uint32_t version = 2;
     file.write(reinterpret_cast<const char*>(&magic), sizeof(magic));
@@ -25,17 +26,17 @@ FastModificationGraph BinaryStrategy::load(const std::string& filename) {
     FastModificationGraph graph;
     std::ifstream file(filename, std::ios::binary);
     if (!file) {
-        return graph;
+        throw FileNotFoundException(filename);
     }
     uint32_t magic, version;
     file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
     file.read(reinterpret_cast<char*>(&version), sizeof(version));
     
     if (magic != 0x47524648) {
-        return graph;
+        throw InvalidFormatException(filename);
     }
     if (version != 2) {
-        return graph;
+        throw UnsupportedVersionException(version, 2);
     }
     readStations(file, graph);
     readEdges(file, graph);
@@ -44,7 +45,7 @@ FastModificationGraph BinaryStrategy::load(const std::string& filename) {
 }
 
 void BinaryStrategy::writeStations(std::ofstream& file, const FastModificationGraph& graph) {
-    uint32_t count = graph.StationCount();
+    uint32_t count = graph.getStationCount();
     file.write(reinterpret_cast<const char*>(&count), sizeof(count));    
     graph.forEachVertex([&](const Station& station) {
         size_t id = station.getId();
@@ -125,7 +126,7 @@ void BinaryStrategy::readEdges(std::ifstream& file, FastModificationGraph& graph
     }
 }
 
-// JSON - баланс читаемости, скорости и масштабирования
+// JSON - для баланса читаемости, скорости и масштабирования
 bool JSONStrategy::save(const FastModificationGraph& graph, const std::string& filename) {
     json j;
     j["version"] = 2;
@@ -165,8 +166,9 @@ bool JSONStrategy::save(const FastModificationGraph& graph, const std::string& f
 FastModificationGraph JSONStrategy::load(const std::string& filename) {
     FastModificationGraph graph;
     std::ifstream file(filename);
-    if (!file) return graph;
-    
+    if (!file) {
+        throw FileNotFoundException(filename);  // ← добавить
+    }
     json j;
     file >> j;
     
@@ -193,8 +195,9 @@ FastModificationGraph JSONStrategy::load(const std::string& filename) {
 // самый простой текстовый формат
 bool TextStrategy::save(const FastModificationGraph& graph, const std::string& filename) {
     std::ofstream file(filename);
-    if (!file) return false;
-    
+    if (!file) {
+        throw FileNotFoundException(filename);  // ← добавить
+    }
     graph.forEachVertex([&](const Station& station) {
         file << "STATION " << station.getId() << " " 
              << station.getName() << " " << station.getLineNo() << "\n";
@@ -221,7 +224,7 @@ FastModificationGraph TextStrategy::load(const std::string& filename) {
     FastModificationGraph graph;
     std::ifstream file(filename);
     if (!file) {
-        return graph;
+        throw FileNotFoundException(filename);  // ← добавить
     }
     std::string line;
     while (std::getline(file, line)) {
