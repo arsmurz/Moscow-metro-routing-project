@@ -35,7 +35,7 @@ public:
     PathResult findShortestPath(size_t start, size_t finish) const {
         const int INF = std::numeric_limits<int>::max();
         
-        // Используем map для непоследовательных ID
+        // map так как id могут быть рабросаны
         std::unordered_map<size_t, int> dist;
         std::unordered_map<size_t, size_t> parent;
         

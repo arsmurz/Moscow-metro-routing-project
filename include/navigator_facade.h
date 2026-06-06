@@ -18,9 +18,9 @@ struct RouteResult {
 };
 
 struct AllRoutesResult {
-    RouteResult fastest;        // самый быстрый маршрут
-    RouteResult cheapest;       // самый дешёвый маршрут
-    RouteResult min_transfers;  // маршрут с минимумом пересадок
+    RouteResult fastest;  // самый быстрый
+    RouteResult cheapest;  // самый дешёвый маршрут
+    RouteResult min_transfers;  // минимум пересадок
 };
 
 class NavigatorFacade {

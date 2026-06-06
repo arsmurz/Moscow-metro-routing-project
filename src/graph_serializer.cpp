@@ -167,7 +167,7 @@ FastModificationGraph JSONStrategy::load(const std::string& filename) {
     FastModificationGraph graph;
     std::ifstream file(filename);
     if (!file) {
-        throw FileNotFoundException(filename);  // ← добавить
+        throw FileNotFoundException(filename);
     }
     json j;
     file >> j;
@@ -196,7 +196,7 @@ FastModificationGraph JSONStrategy::load(const std::string& filename) {
 bool TextStrategy::save(const FastModificationGraph& graph, const std::string& filename) {
     std::ofstream file(filename);
     if (!file) {
-        throw FileNotFoundException(filename);  // ← добавить
+        throw FileNotFoundException(filename);
     }
     graph.forEachVertex([&](const Station& station) {
         file << "STATION " << station.getId() << " " 
@@ -224,7 +224,7 @@ FastModificationGraph TextStrategy::load(const std::string& filename) {
     FastModificationGraph graph;
     std::ifstream file(filename);
     if (!file) {
-        throw FileNotFoundException(filename);  // ← добавить
+        throw FileNotFoundException(filename);
     }
     std::string line;
     while (std::getline(file, line)) {
