@@ -12,7 +12,10 @@ Station::Station(std::string name, int line_num, size_t id)
 }
 
 Edge::Edge(int time, int cost, size_t to, bool is_transfer)
-    : time(time), cost(cost), to(to), is_transfer(is_transfer) {}
+    : time(time), cost(cost), to(to), is_transfer(is_transfer) {
+      assert(time > 0);
+      assert(cost >= 0);
+    }
 
 void FastModificationGraph::AddStation(Station new_station) {
   if (name_to_id.find(new_station.getName()) != name_to_id.end()) {

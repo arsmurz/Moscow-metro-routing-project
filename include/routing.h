@@ -33,6 +33,7 @@ public:
       : graph_(std::move(graph)) {}
 
   PathResult findShortestPath(size_t start, size_t finish) const {
+    assert(graph_ != nullptr);
     const int INF = std::numeric_limits<int>::max();
 
     // map так как id могут быть рабросаны
@@ -58,6 +59,7 @@ public:
 
       graph_->forEachEdge(vertex, [&](const Edge &edge) {
         const int weight = Strategy::edgeWeight(edge);
+        assert(weight >= 0 && "Dijkstra requires non-negative weights");
         int newDist = dist[vertex] + weight;
 
         auto it = dist.find(edge.to);

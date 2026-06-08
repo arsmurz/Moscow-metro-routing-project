@@ -31,7 +31,9 @@ FastModificationGraph BinaryStrategy::load(const std::string &filename) {
   }
   uint32_t magic, version;
   file.read(reinterpret_cast<char *>(&magic), sizeof(magic));
+  assert(file && "Failed to read magic");
   file.read(reinterpret_cast<char *>(&version), sizeof(version));
+  assert(file && "Failed to read version");
 
   if (magic != 0x47524648) {
     throw InvalidFormatException(filename);
@@ -95,6 +97,7 @@ void BinaryStrategy::readStations(std::ifstream &file,
                                   FastModificationGraph &graph) {
   uint32_t count;
   file.read(reinterpret_cast<char *>(&count), sizeof(count));
+  assert(file && "Failed to read count");
 
   for (uint32_t i = 0; i < count; ++i) {
     size_t id;
@@ -123,10 +126,15 @@ void BinaryStrategy::readEdges(std::ifstream &file,
     bool is_transfer;
 
     file.read(reinterpret_cast<char *>(&from), sizeof(from));
+    assert(file && "Failed to read from");
     file.read(reinterpret_cast<char *>(&to), sizeof(to));
+    assert(file && "Failed to read to");
     file.read(reinterpret_cast<char *>(&time), sizeof(time));
+    assert(file && "Failed to read time");
     file.read(reinterpret_cast<char *>(&cost), sizeof(cost));
+    assert(file && "Failed to read cost");
     file.read(reinterpret_cast<char *>(&is_transfer), sizeof(is_transfer));
+    assert(file && "Failed to read is_transfer");
 
     graph.AddEdge(from, Edge(time, cost, to, is_transfer));
   }
