@@ -4,12 +4,7 @@
 #include <queue>
 #include <vector>
 
-struct Edge {
-  int to;
-  int time;
-  int cost;
-  bool isTransfer;
-};
+#include "../include/graph.h"
 
 class IGraph {
 public:
@@ -18,8 +13,7 @@ public:
   virtual size_t vertexCount() const = 0;
 };
 
-struct PathResult {
-  int totalWeight = 0;
+struct RoteResult {
   std::vector<int> path;
   bool found = false;
 };
@@ -58,7 +52,6 @@ public:
     while (!pq.empty()) {
       auto [currentDist, vertex] = pq.top();
       pq.pop();
-
       if (currentDist > dist[vertex]) { continue; }
       if (vertex == finish) { break; }
       for (const auto &edge : graph_->getEdges(vertex)) {
@@ -74,7 +67,6 @@ public:
     if (dist[finish] == INF) {
       return result;
     }
-    result.totalWeight = dist[finish];
     result.found = true;
     for (int v = finish; v != -1; v = parent[v]) {
       result.path.push_back(v);
